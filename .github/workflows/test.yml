@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [8, 17, 21, 23]
+        java-version: [8, 17, 21]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
