@@ -13,19 +13,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Make script executable
-        run: chmod +x setup.sh
+        run: chmod +x install.sh
 
       # ---- Test 1: Java=21 + существующий runner ----
       - name: Test valid input (Java 21 + runner exists)
         run: |
           echo "#!/bin/bash" > start.sh
-          printf "21\nstart.sh\n" | ./setup.sh
+          printf "21\nstart.sh\n" | ./install.sh
 
       # ---- Test 2: Неверная Java версия ----
       - name: Test invalid Java version
         run: |
           set +e
-          printf "999\nstart.sh\n" | ./setup.sh
+          printf "999\nstart.sh\n" | ./install.sh
           if [ $? -eq 0 ]; then
             echo "❌ Script should fail on invalid Java version"
             exit 1
@@ -35,7 +35,7 @@ jobs:
       - name: Test missing runner file
         run: |
           set +e
-          printf "21\nnotfound.sh\n" | ./setup.sh
+          printf "21\nnotfound.sh\n" | ./install.sh
           if [ $? -eq 0 ]; then
             echo "❌ Script should fail when runner file is missing"
             exit 1
