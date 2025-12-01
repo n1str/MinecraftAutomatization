@@ -22,10 +22,6 @@ case "$JAVAVER" in
     echo "Installing Java 21..."
     sudo apt install -y openjdk-21-jre
     ;;
-  23)
-    echo "Installing Java 23..."
-    sudo apt install -y openjdk-23-jre
-    ;;
   *)
     echo "Error: unsupported Java version"
     exit 1

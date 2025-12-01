@@ -5,9 +5,12 @@ on:
   pull_request:
 
 jobs:
-  test-install-script:
+  # ---- Тест всех версий Java ----
+  test-java:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        java-version: [8, 17, 21, 23]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -15,34 +18,24 @@ jobs:
       - name: Make install.sh executable
         run: chmod +x install.sh
 
-      # ---- Создаём тестовый runner ----
       - name: Create test runner file
         run: |
           echo -e '#!/bin/bash\necho "Minecraft server started"' > start.sh
           chmod +x start.sh
 
-      # ---- Test 1: Java=8 + runner exists ----
-      - name: Test Java 8 + runner exists
+      - name: Run install.sh with Java ${{ matrix.java-version }}
         run: |
-          printf "8\nstart.sh\n" | ./install.sh
+          printf "${{ matrix.java-version }}\nstart.sh\n" | ./install.sh
 
-      # ---- Test 2: Java=17 + runner exists ----
-      - name: Test Java 17 + runner exists
-        run: |
-          printf "17\nstart.sh\n" | ./install.sh
-
-      # ---- Test 3: Java=21 + runner exists ----
-      - name: Test Java 21 + runner exists
-        run: |
-          printf "21\nstart.sh\n" | ./install.sh
-
-      # ---- Test 4: Java=23 + runner exists ----
-      - name: Test Java 23 + runner exists
-        run: |
-          printf "23\nstart.sh\n" | ./install.sh
-
-      # ---- Test 5: Invalid Java version ----
-      - name: Test invalid Java version
+  # ---- Тест невалидной версии Java ----
+  test-invalid-java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: chmod +x install.sh
+      - name: Create test runner file
+        run: echo -e '#!/bin/bash\necho "Minecraft server started"' > start.sh
+      - name: Run install.sh with invalid Java
         run: |
           set +e
           printf "999\nstart.sh\n" | ./install.sh
@@ -51,8 +44,13 @@ jobs:
             exit 1
           fi
 
-      # ---- Test 6: Runner missing ----
-      - name: Test missing runner file
+  # ---- Тест отсутствующего runner ----
+  test-missing-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: chmod +x install.sh
+      - name: Run install.sh with missing runner
         run: |
           set +e
           printf "21\nnotfound.sh\n" | ./install.sh
