@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#sudo apt update && sudo apt upgarde -y
+sudo apt update && sudo apt upgarde -y
 
-#sudo apt install python-pip3
-#sudo apt install git
-#sudo apt install screen
+sudo apt install python-pip3
+sudo apt install git
+sudo apt install screen
 
 echo Enter java version:
 read JAVAVER
