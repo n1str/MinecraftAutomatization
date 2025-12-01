@@ -1,27 +1,47 @@
-name: Bash Script Tests
+name: Bash Script Full Install Tests
 
 on:
   push:
   pull_request:
 
 jobs:
-  test-bash-script:
+  test-install-script:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Make script executable
+      - name: Make install.sh executable
         run: chmod +x install.sh
 
-      # ---- Test 1: Java=21 + существующий runner ----
-      - name: Test valid input (Java 21 + runner exists)
+      # ---- Создаём тестовый runner ----
+      - name: Create test runner file
         run: |
-          echo "#!/bin/bash" > start.sh
+          echo -e '#!/bin/bash\necho "Minecraft server started"' > start.sh
+          chmod +x start.sh
+
+      # ---- Test 1: Java=8 + runner exists ----
+      - name: Test Java 8 + runner exists
+        run: |
+          printf "8\nstart.sh\n" | ./install.sh
+
+      # ---- Test 2: Java=17 + runner exists ----
+      - name: Test Java 17 + runner exists
+        run: |
+          printf "17\nstart.sh\n" | ./install.sh
+
+      # ---- Test 3: Java=21 + runner exists ----
+      - name: Test Java 21 + runner exists
+        run: |
           printf "21\nstart.sh\n" | ./install.sh
 
-      # ---- Test 2: Неверная Java версия ----
+      # ---- Test 4: Java=23 + runner exists ----
+      - name: Test Java 23 + runner exists
+        run: |
+          printf "23\nstart.sh\n" | ./install.sh
+
+      # ---- Test 5: Invalid Java version ----
       - name: Test invalid Java version
         run: |
           set +e
@@ -31,7 +51,7 @@ jobs:
             exit 1
           fi
 
-      # ---- Test 3: Runner отсутствует ----
+      # ---- Test 6: Runner missing ----
       - name: Test missing runner file
         run: |
           set +e
