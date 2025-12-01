@@ -1,0 +1,42 @@
+name: Bash Script Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-bash-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Make script executable
+        run: chmod +x setup.sh
+
+      # ---- Test 1: Java=21 + существующий runner ----
+      - name: Test valid input (Java 21 + runner exists)
+        run: |
+          echo "#!/bin/bash" > start.sh
+          printf "21\nstart.sh\n" | ./setup.sh
+
+      # ---- Test 2: Неверная Java версия ----
+      - name: Test invalid Java version
+        run: |
+          set +e
+          printf "999\nstart.sh\n" | ./setup.sh
+          if [ $? -eq 0 ]; then
+            echo "❌ Script should fail on invalid Java version"
+            exit 1
+          fi
+
+      # ---- Test 3: Runner отсутствует ----
+      - name: Test missing runner file
+        run: |
+          set +e
+          printf "21\nnotfound.sh\n" | ./setup.sh
+          if [ $? -eq 0 ]; then
+            echo "❌ Script should fail when runner file is missing"
+            exit 1
+          fi
